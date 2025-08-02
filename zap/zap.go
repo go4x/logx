@@ -1,4 +1,4 @@
-package logx
+package zap
 
 import (
 	"context"
@@ -10,7 +10,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-var Default = NewLog(&Zap{Director: "logs"})
+var Default = NewLog(&ZapConfig{Director: "logs"})
 
 type loggerKey string
 
@@ -20,12 +20,27 @@ type Logger struct {
 	*zap.SugaredLogger
 }
 
-// NewLog 获取 zap.Logger
-func NewLog(c *Zap) *Logger {
+// pathExists 检查路径是否存在
+func pathExists(path string) (bool, error) {
+	fi, err := os.Stat(path)
+	if err == nil {
+		if fi.IsDir() {
+			return true, nil
+		}
+		return false, fmt.Errorf("file exists")
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
+}
+
+// NewLog create a zap.Logger instance
+func NewLog(c *ZapConfig) *Logger {
 	zapObj = zapDef{c: c}
 
-	// 如果日志文件夹没有，则创建
-	if ok, _ := PathExists(c.Director); !ok {
+	// if the log directory does not exist, create it
+	if ok, _ := pathExists(c.Director); !ok {
 		fmt.Printf("create %v directory\n", c.Director)
 		_ = os.Mkdir(c.Director, os.ModePerm)
 	}
@@ -33,7 +48,7 @@ func NewLog(c *Zap) *Logger {
 	cores := zapObj.GetZapCores()
 	logger := zap.New(zapcore.NewTee(cores...))
 
-	if c.ShowLine {
+	if c.ShowCaller {
 		logger = logger.WithOptions(zap.AddCaller())
 	}
 	return &Logger{SugaredLogger: logger.Sugar()}
@@ -42,10 +57,10 @@ func NewLog(c *Zap) *Logger {
 var zapObj zapDef
 
 type zapDef struct {
-	c *Zap
+	c *ZapConfig
 }
 
-// GetEncoder 获取 zapcore.Encoder
+// GetEncoder get zapcore.Encoder
 func (z *zapDef) GetEncoder() zapcore.Encoder {
 	switch z.c.Format {
 	case ZapFormatJSON:
@@ -55,7 +70,7 @@ func (z *zapDef) GetEncoder() zapcore.Encoder {
 	}
 }
 
-// GetEncoderConfig 获取zapcore.EncoderConfig
+// GetEncoderConfig get zapcore.EncoderConfig
 func (z *zapDef) GetEncoderConfig() zapcore.EncoderConfig {
 	return zapcore.EncoderConfig{
 		MessageKey:     "msg",
@@ -73,9 +88,9 @@ func (z *zapDef) GetEncoderConfig() zapcore.EncoderConfig {
 	}
 }
 
-// GetEncoderCore 获取Encoder的 zapcore.Core
+// GetEncoderCore get zapcore.Core
 func (z *zapDef) GetEncoderCore(l zapcore.Level, level zap.LevelEnablerFunc) zapcore.Core {
-	writer, err := FileRotatelogs.GetWriteSyncer(z.c, l.String()) // 使用file-rotatelogs进行日志分割
+	writer, err := GetWriter(z.c, l.String()) // use file-rotatelogs to split logs
 	if err != nil {
 		fmt.Printf("Get Write Syncer Failed err:%v", err.Error())
 		return nil
@@ -83,7 +98,7 @@ func (z *zapDef) GetEncoderCore(l zapcore.Level, level zap.LevelEnablerFunc) zap
 	return zapcore.NewCore(z.GetEncoder(), writer, level)
 }
 
-// CustomTimeEncoder 自定义日志输出时间格式
+// CustomTimeEncoder custom log output time format
 func (z *zapDef) CustomTimeEncoder(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
 	var prefix string
 	if z.c.Prefix != "" {
@@ -92,7 +107,7 @@ func (z *zapDef) CustomTimeEncoder(t time.Time, encoder zapcore.PrimitiveArrayEn
 	encoder.AppendString(prefix + t.Format("2006/01/02 15:04:05.000"))
 }
 
-// GetZapCores 根据配置文件的Level获取 []zapcore.Core
+// GetZapCores get []zapcore.Core
 func (z *zapDef) GetZapCores() []zapcore.Core {
 	cores := make([]zapcore.Core, 0, 7)
 	for level := z.c.TransportLevel(); level <= zapcore.FatalLevel; level++ {
@@ -101,50 +116,50 @@ func (z *zapDef) GetZapCores() []zapcore.Core {
 	return cores
 }
 
-// GetLevelPriority 根据 zapcore.Level 获取 zap.LevelEnablerFunc
+// GetLevelPriority get zap.LevelEnablerFunc
 func (z *zapDef) GetLevelPriority(level zapcore.Level) zap.LevelEnablerFunc {
 	switch level {
 	case zapcore.DebugLevel:
-		return func(level zapcore.Level) bool { // 调试级别
+		return func(level zapcore.Level) bool { // debug level
 			return level == zap.DebugLevel
 		}
 	case zapcore.InfoLevel:
-		return func(level zapcore.Level) bool { // 日志级别
+		return func(level zapcore.Level) bool { // info level
 			return level == zap.InfoLevel
 		}
 	case zapcore.WarnLevel:
-		return func(level zapcore.Level) bool { // 警告级别
+		return func(level zapcore.Level) bool { // warn level
 			return level == zap.WarnLevel
 		}
 	case zapcore.ErrorLevel:
-		return func(level zapcore.Level) bool { // 错误级别
+		return func(level zapcore.Level) bool { // error level
 			return level == zap.ErrorLevel
 		}
 	case zapcore.DPanicLevel:
-		return func(level zapcore.Level) bool { // dpanic级别
+		return func(level zapcore.Level) bool { // dpanic level
 			return level == zap.DPanicLevel
 		}
 	case zapcore.PanicLevel:
-		return func(level zapcore.Level) bool { // panic级别
+		return func(level zapcore.Level) bool { // panic level
 			return level == zap.PanicLevel
 		}
 	case zapcore.FatalLevel:
-		return func(level zapcore.Level) bool { // 终止级别
+		return func(level zapcore.Level) bool { // fatal level
 			return level == zap.FatalLevel
 		}
 	default:
-		return func(level zapcore.Level) bool { // 调试级别
+		return func(level zapcore.Level) bool { // debug level
 			return level == zap.DebugLevel
 		}
 	}
 }
 
-// NewContext 给指定的context添加字段
+// NewContext add fields to the specified context
 func (l *Logger) NewContext(ctx context.Context, fields ...any) context.Context {
 	return context.WithValue(ctx, LoggerKey, l.WithContext(ctx).With(fields...))
 }
 
-// WithContext 从指定的context返回一个zap实例
+// WithContext return a zap instance from the specified context
 func (l *Logger) WithContext(ctx context.Context) *Logger {
 	if ctx == nil {
 		return l

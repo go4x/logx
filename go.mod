@@ -2,7 +2,7 @@ module github.com/gophero/logx
 
 go 1.24.0
 
-require github.com/lestrrat-go/file-rotatelogs v2.4.0+incompatible
+require gopkg.in/natefinch/lumberjack.v2 v2.2.1
 
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
@@ -12,8 +12,6 @@ require (
 )
 
 require (
-	github.com/lestrrat-go/strftime v1.1.1 // indirect
-	github.com/pkg/errors v0.9.1 // indirect
 	github.com/stretchr/testify v1.10.0
 	go.uber.org/zap v1.27.0
 )

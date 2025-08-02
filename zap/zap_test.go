@@ -1,10 +1,10 @@
-package logx_test
+package zap_test
 
 import (
 	"fmt"
 	"testing"
 
-	"github.com/gophero/logx"
+	"github.com/gophero/logx/zap"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -13,16 +13,16 @@ func TestDefLogger(t *testing.T) {
 		err := recover()
 		fmt.Printf("need an error: %v", err)
 		assert.True(t, err != nil)
-		logx.Default.Debug("this is a debug log")
-		logx.Default.Info("this is an info log")
-		logx.Default.Warn("this is an warning log")
-		logx.Default.Error("this is an error log")
-		logx.Default.Fatal("this is a fatal log")
+		zap.Default.Debug("this is a debug log")
+		zap.Default.Info("this is an info log")
+		zap.Default.Warn("this is an warning log")
+		zap.Default.Error("this is an error log")
+		zap.Default.Fatal("this is a fatal log")
 	}()
 }
 
-func NewLog() *logx.Logger {
-	return logx.NewLog(&logx.Zap{
+func NewLog() *zap.Logger {
+	return zap.NewLog(&zap.ZapConfig{
 		Level:         "debug",
 		Prefix:        "",
 		Format:        "text",
@@ -30,7 +30,7 @@ func NewLog() *logx.Logger {
 		EncodeLevel:   "cap",
 		StacktraceKey: "stacktrace",
 		MaxAge:        0,
-		ShowLine:      true,
+		ShowCaller:    true,
 		LogInConsole:  true,
 	})
 }
