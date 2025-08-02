@@ -134,3 +134,28 @@ func initZapLogger(c *LoggerConfig) error {
 	globalLogger = logger
 	return nil
 }
+
+// Debug is a wrapper for the global logger's Debug method
+func Debug(args ...any) {
+	globalLogger.Debug(args...)
+}
+
+// Info is a wrapper for the global logger's Info method
+func Info(args ...any) {
+	globalLogger.Info(args...)
+}
+
+// Warn is a wrapper for the global logger's Warn method
+func Warn(args ...any) {
+	globalLogger.Warn(args...)
+}
+
+// Error is a wrapper for the global logger's Error method
+func Error(args ...any) {
+	globalLogger.Error(args...)
+}
+
+// Fatal is a wrapper for the global logger's Fatal method
+func Fatal(args ...any) {
+	globalLogger.Fatal(args...)
+}
