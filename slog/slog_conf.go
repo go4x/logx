@@ -1,34 +1,40 @@
 package slog
 
-// SlogConfig slog logger configuration
+// SlogConfig holds the configuration for the slog logger.
 type SlogConfig struct {
-	// log level
+	// Level specifies the minimum log level (debug, info, warn, error, fatal).
 	Level string `mapstructure:"level" yaml:"level"`
 
-	// whether to write to file
+	// LogInFile determines whether to write logs to file.
 	LogInFile bool `mapstructure:"log-in-file" yaml:"log-in-file"`
 
-	// whether to output to console
+	// LogInConsole determines whether to output logs to console.
 	LogInConsole bool `mapstructure:"log-in-console" yaml:"log-in-console"`
 
-	// log directory
+	// Dir specifies the directory where log files are stored.
 	Dir string `mapstructure:"dir" yaml:"dir"`
 
-	// log format, text or json
+	// Format specifies the log output format (text or json).
 	Format string `mapstructure:"format" yaml:"format"`
 
-	// log retention time in days, 0 means no limit
+	// MaxAge specifies the maximum number of days to retain log files (0 means no limit).
 	MaxAge int `mapstructure:"max-age" yaml:"max-age"`
 
-	// log file size in MB, 0 means no limit
+	// MaxSize specifies the maximum size of a log file in MB (0 means no limit).
 	MaxSize int `mapstructure:"max-size" yaml:"max-size"`
 
-	// maximum number of log files to keep, 0 means no limit
+	// MaxBackups specifies the maximum number of log files to keep (0 means no limit).
 	MaxBackups int `mapstructure:"max-backups" yaml:"max-backups"`
 
-	// local time, default is true, if false, use UTC time
+	// LocalTime determines whether to use local time (true) or UTC time (false).
 	LocalTime bool `mapstructure:"local-time" yaml:"local-time"`
 
-	// compress, default is false
+	// Compress determines whether to compress rotated log files.
 	Compress bool `mapstructure:"compress" yaml:"compress"`
+
+	// BufferSize specifies the buffer size for performance optimization (0 disables buffering).
+	BufferSize int `mapstructure:"buffer-size" yaml:"buffer-size"`
+
+	// FlushInterval specifies the interval in seconds to flush the buffer.
+	FlushInterval int `mapstructure:"flush-interval" yaml:"flush-interval"`
 }

@@ -1,4 +1,4 @@
-module github.com/gophero/logx
+module github.com/go4x/logx
 
 go 1.24.0
 

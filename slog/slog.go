@@ -1,3 +1,6 @@
+// Package slog provides a slog logger implementation for the logx package.
+// It supports Go's standard structured logging with features like log rotation,
+// buffering, and performance optimization.
 package slog
 
 import (
@@ -7,12 +10,12 @@ import (
 	"os"
 )
 
-// Logger is a slog wrapper that implements the logx.Logger interface
+// Logger wraps slog.Logger to implement the logx.Logger interface.
 type Logger struct {
 	*slog.Logger
 }
 
-// pathExists checks if the path exists
+// pathExists checks if the given path exists.
 func pathExists(path string) (bool, error) {
 	fi, err := os.Stat(path)
 	if err == nil {
@@ -27,7 +30,7 @@ func pathExists(path string) (bool, error) {
 	return false, err
 }
 
-// NewLog creates a slog logger instance
+// NewLog creates a new slog logger instance with the given configuration.
 func NewLog(c *SlogConfig) *Logger {
 	// if the log directory does not exist, create it
 	if c.Dir != "" {
@@ -65,27 +68,48 @@ func getSlogLevel(level string) slog.Level {
 
 // Debug implements the Debug method of the Logger interface
 func (l *Logger) Debug(args ...any) {
-	l.Logger.Debug(args[0].(string), args[1:]...)
+	if len(args) == 0 {
+		return
+	}
+	msg := fmt.Sprint(args...)
+	l.Logger.Debug(msg)
 }
 
 // Info implements the Info method of the Logger interface
 func (l *Logger) Info(args ...any) {
-	l.Logger.Info(args[0].(string), args[1:]...)
+	if len(args) == 0 {
+		return
+	}
+	msg := fmt.Sprint(args...)
+	l.Logger.Info(msg)
 }
 
 // Warn implements the Warn method of the Logger interface
 func (l *Logger) Warn(args ...any) {
-	l.Logger.Warn(args[0].(string), args[1:]...)
+	if len(args) == 0 {
+		return
+	}
+	msg := fmt.Sprint(args...)
+	l.Logger.Warn(msg)
 }
 
 // Error implements the Error method of the Logger interface
 func (l *Logger) Error(args ...any) {
-	l.Logger.Error(args[0].(string), args[1:]...)
+	if len(args) == 0 {
+		return
+	}
+	msg := fmt.Sprint(args...)
+	l.Logger.Error(msg)
 }
 
 // Fatal implements the Fatal method of the Logger interface
 func (l *Logger) Fatal(args ...any) {
-	l.Logger.Error(args[0].(string), args[1:]...)
+	if len(args) == 0 {
+		os.Exit(1)
+		return
+	}
+	msg := fmt.Sprint(args...)
+	l.Logger.Error(msg)
 	os.Exit(1)
 }
 

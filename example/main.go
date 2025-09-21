@@ -2,70 +2,50 @@ package main
 
 import (
 	"fmt"
-	"log"
-
-	"github.com/gophero/logx"
+	// Import example functions from the current package
 )
 
+// main demonstrates all the features of the logx library.
+// It runs various examples showing different aspects of logging:
+// - Basic usage with zap and slog loggers
+// - Global logger functions
+// - Different log levels
+// - Performance optimization
+// - Buffer configuration
+// - Performance comparison between buffered and non-buffered logging
 func main() {
-	// 示例1: 使用zap日志器
-	fmt.Println("=== 使用zap日志器 ===")
-	zapConfig := &logx.LoggerConfig{
-		Type:         logx.LoggerTypeZap,
-		Level:        "error",
-		LogInConsole: false,
-		Dir:          "logs",
-		Format:       "json",
-		MaxAge:       7,
-		MaxSize:      100,
-		MaxBackups:   10,
-	}
+	fmt.Println("=== logx Examples Demo ===")
+	fmt.Println()
 
-	err := logx.Init(zapConfig)
-	if err != nil {
-		log.Fatal("初始化zap日志器失败:", err)
-	}
+	// Basic usage example
+	fmt.Println("1. Basic Usage Example")
+	ExampleBasicUsage()
+	fmt.Println()
 
-	logger := logx.GetLogger()
-	logger.Info("这是一条zap日志信息")
-	logger.Error("这是一条zap错误日志")
+	// Global logger example
+	fmt.Println("2. Global Logger Example")
+	ExampleGlobalLogger()
+	fmt.Println()
 
-	// 示例2: 使用slog日志器
-	fmt.Println("\n=== 使用slog日志器 ===")
-	slogConfig := &logx.LoggerConfig{
-		Type:         logx.LoggerTypeSlog,
-		Level:        "error",
-		LogInConsole: false,
-		Dir:          "logs",
-		Format:       "json",
-		MaxAge:       30,
-		MaxSize:      50,
-		MaxBackups:   5,
-	}
+	// Log levels example
+	fmt.Println("3. Log Levels Example")
+	ExampleLogLevels()
+	fmt.Println()
 
-	err = logx.Init(slogConfig)
-	if err != nil {
-		log.Fatal("初始化slog日志器失败:", err)
-	}
+	// Performance optimization example
+	fmt.Println("4. Performance Optimization Example")
+	ExamplePerformanceOptimization()
+	fmt.Println()
 
-	logger = logx.GetLogger()
-	logger.Info("这是一条slog日志信息")
-	logger.Warn("这是一条slog警告日志")
-	logger.Fatal("这是一条slog致命日志")
+	// Buffer configuration example
+	fmt.Println("5. Buffer Configuration Example")
+	ExampleBufferConfiguration()
+	fmt.Println()
 
-	// 示例3: 不指定类型，默认使用zap
-	fmt.Println("\n=== 默认使用zap日志器 ===")
-	defaultConfig := &logx.LoggerConfig{
-		Level:        "warn",
-		LogInConsole: true,
-		Format:       "text",
-	}
+	// Buffer performance comparison example
+	fmt.Println("6. Buffer Performance Comparison Example")
+	ExampleBufferVsNoBuffer()
+	fmt.Println()
 
-	err = logx.Init(defaultConfig)
-	if err != nil {
-		log.Fatal("初始化默认日志器失败:", err)
-	}
-
-	logger = logx.GetLogger()
-	logger.Warn("这是一条默认日志器的警告信息")
+	fmt.Println("=== All Examples Demo Completed ===")
 }

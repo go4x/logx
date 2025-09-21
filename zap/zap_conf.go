@@ -1,3 +1,4 @@
+// Package zap provides configuration structures and utilities for the zap logger.
 package zap
 
 import (
@@ -7,29 +8,53 @@ import (
 )
 
 const (
+	// ZapFormatJSON specifies JSON format for log output.
 	ZapFormatJSON = "json"
+	// ZapFormatText specifies plain text format for log output.
 	ZapFormatText = "text"
 
-	ZapEncodeLevelLower      = "lower"
+	// ZapEncodeLevelLower encodes log levels in lowercase.
+	ZapEncodeLevelLower = "lower"
+	// ZapEncodeLevelLowerColor encodes log levels in lowercase with color.
 	ZapEncodeLevelLowerColor = "lowerColor"
-	ZapEncodeLevelCap        = "cap"
-	ZapEncodeLevelCapColor   = "capColor"
+	// ZapEncodeLevelCap encodes log levels in uppercase.
+	ZapEncodeLevelCap = "cap"
+	// ZapEncodeLevelCapColor encodes log levels in uppercase with color.
+	ZapEncodeLevelCapColor = "capColor"
 )
 
+// ZapConfig holds the configuration for the zap logger.
 type ZapConfig struct {
-	Level         string `mapstructure:"level" yaml:"level"`                   // 级别
-	Prefix        string `mapstructure:"prefix" yaml:"prefix"`                 // 日志前缀
-	Format        string `mapstructure:"format" yaml:"format"`                 // 输出，json或text
-	Director      string `mapstructure:"director" yaml:"director"`             // 日志文件夹
-	EncodeLevel   string `mapstructure:"encode-level" yaml:"encode-level"`     // 编码级
-	StacktraceKey string `mapstructure:"stacktrace-key" yaml:"stacktrace-key"` // 栈名
-	MaxAge        int    `mapstructure:"max-age" yaml:"max-age"`               // 日志留存时间
-	MaxSize       int    `mapstructure:"max-size" yaml:"max-size"`             // 日志文件大小
-	MaxBackups    int    `mapstructure:"max-backups" yaml:"max-backups"`       // 最大备份数量
-	ShowCaller    bool   `mapstructure:"show-caller" yaml:"show-caller"`       // 显示行
-	LogInConsole  bool   `mapstructure:"log-in-console" yaml:"log-in-console"` // 输出控制台
-	LocalTime     bool   `mapstructure:"local-time" yaml:"local-time"`         // 本地时间
-	Compress      bool   `mapstructure:"compress" yaml:"compress"`             // 是否压缩
+	// Level specifies the minimum log level (debug, info, warn, error, fatal).
+	Level string `mapstructure:"level" yaml:"level"`
+	// Prefix specifies the log message prefix.
+	Prefix string `mapstructure:"prefix" yaml:"prefix"`
+	// Format specifies the log output format (json or text).
+	Format string `mapstructure:"format" yaml:"format"`
+	// Director specifies the directory where log files are stored.
+	Director string `mapstructure:"director" yaml:"director"`
+	// EncodeLevel specifies how to encode log levels.
+	EncodeLevel string `mapstructure:"encode-level" yaml:"encode-level"`
+	// StacktraceKey specifies the key for stacktrace in log output.
+	StacktraceKey string `mapstructure:"stacktrace-key" yaml:"stacktrace-key"`
+	// MaxAge specifies the maximum number of days to retain log files.
+	MaxAge int `mapstructure:"max-age" yaml:"max-age"`
+	// MaxSize specifies the maximum size of a log file in MB.
+	MaxSize int `mapstructure:"max-size" yaml:"max-size"`
+	// MaxBackups specifies the maximum number of log files to keep.
+	MaxBackups int `mapstructure:"max-backups" yaml:"max-backups"`
+	// ShowCaller determines whether to show the caller information.
+	ShowCaller bool `mapstructure:"show-caller" yaml:"show-caller"`
+	// LogInConsole determines whether to output logs to console.
+	LogInConsole bool `mapstructure:"log-in-console" yaml:"log-in-console"`
+	// LocalTime determines whether to use local time (true) or UTC time (false).
+	LocalTime bool `mapstructure:"local-time" yaml:"local-time"`
+	// Compress determines whether to compress rotated log files.
+	Compress bool `mapstructure:"compress" yaml:"compress"`
+	// BufferSize specifies the buffer size for performance optimization.
+	BufferSize int `mapstructure:"buffer-size" yaml:"buffer-size"`
+	// FlushInterval specifies the interval in seconds to flush the buffer.
+	FlushInterval int `mapstructure:"flush-interval" yaml:"flush-interval"`
 }
 
 // ZapEncodeLevel get zapcore.LevelEncoder
@@ -59,7 +84,7 @@ func (z *ZapConfig) TransportLevel() zapcore.Level {
 	case "warn":
 		return zapcore.WarnLevel
 	case "error":
-		return zapcore.WarnLevel
+		return zapcore.ErrorLevel
 	case "dpanic":
 		return zapcore.DPanicLevel
 	case "panic":

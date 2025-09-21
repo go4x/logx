@@ -1,25 +1,10 @@
 package zap_test
 
 import (
-	"fmt"
-	"testing"
-
-	"github.com/gophero/logx/zap"
-	"github.com/stretchr/testify/assert"
+	"github.com/go4x/logx/zap"
 )
 
-func TestDefLogger(t *testing.T) {
-	go func() {
-		err := recover()
-		fmt.Printf("need an error: %v", err)
-		assert.True(t, err != nil)
-		zap.Default.Debug("this is a debug log")
-		zap.Default.Info("this is an info log")
-		zap.Default.Warn("this is an warning log")
-		zap.Default.Error("this is an error log")
-		zap.Default.Fatal("this is a fatal log")
-	}()
-}
+// TestDefLogger is removed due to goroutine issues in testing
 
 func NewLog() *zap.Logger {
 	return zap.NewLog(&zap.ZapConfig{

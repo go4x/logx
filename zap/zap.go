@@ -1,3 +1,6 @@
+// Package zap provides a zap logger implementation for the logx package.
+// It supports high-performance logging with features like log rotation,
+// buffering, and structured logging.
 package zap
 
 import (
@@ -10,17 +13,20 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// Default is the default zap logger instance.
 var Default = NewLog(&ZapConfig{Director: "logs"})
 
 type loggerKey string
 
+// LoggerKey is the context key for storing the logger.
 const LoggerKey loggerKey = "zapLogger"
 
+// Logger wraps zap.SugaredLogger to implement the logx.Logger interface.
 type Logger struct {
 	*zap.SugaredLogger
 }
 
-// pathExists 检查路径是否存在
+// pathExists checks if the given path exists.
 func pathExists(path string) (bool, error) {
 	fi, err := os.Stat(path)
 	if err == nil {
@@ -35,7 +41,7 @@ func pathExists(path string) (bool, error) {
 	return false, err
 }
 
-// NewLog create a zap.Logger instance
+// NewLog creates a new zap logger instance with the given configuration.
 func NewLog(c *ZapConfig) *Logger {
 	zapObj = zapDef{c: c}
 
@@ -56,11 +62,12 @@ func NewLog(c *ZapConfig) *Logger {
 
 var zapObj zapDef
 
+// zapDef holds the zap logger definition.
 type zapDef struct {
 	c *ZapConfig
 }
 
-// GetEncoder get zapcore.Encoder
+// GetEncoder returns a zapcore.Encoder based on the configuration.
 func (z *zapDef) GetEncoder() zapcore.Encoder {
 	switch z.c.Format {
 	case ZapFormatJSON:
@@ -82,7 +89,7 @@ func (z *zapDef) GetEncoderConfig() zapcore.EncoderConfig {
 		StacktraceKey:  z.c.StacktraceKey,
 		LineEnding:     zapcore.DefaultLineEnding,
 		EncodeLevel:    z.c.ZapEncodeLevel(),
-		EncodeTime:     z.CustomTimeEncoder, // 日志时间
+		EncodeTime:     z.CustomTimeEncoder, // Log time
 		EncodeDuration: zapcore.SecondsDurationEncoder,
 		EncodeCaller:   zapcore.ShortCallerEncoder,
 	}
