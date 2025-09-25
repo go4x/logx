@@ -31,21 +31,23 @@ func pathExists(path string) (bool, error) {
 }
 
 // NewLog creates a new slog logger instance with the given configuration.
-func NewLog(c *SlogConfig) *Logger {
-	// if the log directory does not exist, create it
-	if c.Dir != "" {
-		if ok, _ := pathExists(c.Dir); !ok {
-			_ = os.MkdirAll(c.Dir, os.ModePerm)
-		}
+// Returns nil if configuration is invalid or handler creation fails.
+func NewLog(c *SlogConfig) (*Logger, error) {
+	if c.Dir == "" {
+		return nil, fmt.Errorf("dir is required")
+	}
+
+	if ok, _ := pathExists(c.Dir); !ok {
+		_ = os.MkdirAll(c.Dir, os.ModePerm)
 	}
 
 	handler, err := GetHandler(c)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	logger := slog.New(handler)
-	return &Logger{Logger: logger}
+	return &Logger{Logger: logger}, nil
 }
 
 // getSlogLevel converts the string level to slog.Level
@@ -103,8 +105,11 @@ func (l *Logger) Error(args ...any) {
 }
 
 // Fatal implements the Fatal method of the Logger interface
+// Note: This implementation logs the message as error and exits.
+// Consider using a different approach for production code.
 func (l *Logger) Fatal(args ...any) {
 	if len(args) == 0 {
+		l.Logger.Error("Fatal error occurred")
 		os.Exit(1)
 		return
 	}

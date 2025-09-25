@@ -33,7 +33,7 @@ func TestZapConfigValidation(t *testing.T) {
 		{
 			name:   "EmptyConfig",
 			config: &zap.ZapConfig{},
-			valid:  true, // Should work with defaults
+			valid:  false, // Should work with defaults
 		},
 		{
 			name: "MinimalConfig",
@@ -49,9 +49,15 @@ func TestZapConfigValidation(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			defer os.RemoveAll("testlogs")
 
-			logger := zap.NewLog(tc.config)
-			if logger == nil {
-				t.Error("expected logger to be created")
+			logger, err := zap.NewLog(tc.config)
+			if !tc.valid {
+				if err == nil || logger != nil {
+					t.Errorf("expected logger not to be created and got error, but no error")
+				}
+			} else {
+				if logger == nil || err != nil {
+					t.Error("expected logger to be created")
+				}
 			}
 		})
 	}
@@ -79,7 +85,10 @@ func TestZapEncodeLevel(t *testing.T) {
 				LogInConsole: true,
 			}
 
-			logger := zap.NewLog(config)
+			logger, err := zap.NewLog(config)
+			if err != nil {
+				t.Errorf("expected logger to be created, but got error: %v", err)
+			}
 			if logger == nil {
 				t.Error("expected logger to be created")
 			}
@@ -105,7 +114,10 @@ func TestZapFormats(t *testing.T) {
 				LogInConsole: true,
 			}
 
-			logger := zap.NewLog(config)
+			logger, err := zap.NewLog(config)
+			if err != nil {
+				t.Errorf("expected logger to be created, but got error: %v", err)
+			}
 			if logger == nil {
 				t.Error("expected logger to be created")
 			}
@@ -137,7 +149,10 @@ func TestZapShowCaller(t *testing.T) {
 				ShowCaller:   tc.showCaller,
 			}
 
-			logger := zap.NewLog(config)
+			logger, err := zap.NewLog(config)
+			if err != nil {
+				t.Errorf("expected logger to be created, but got error: %v", err)
+			}
 			if logger == nil {
 				t.Error("expected logger to be created")
 			}
@@ -159,7 +174,10 @@ func TestZapStacktraceKey(t *testing.T) {
 		StacktraceKey: "custom_stacktrace",
 	}
 
-	logger := zap.NewLog(config)
+	logger, err := zap.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -183,7 +201,10 @@ func TestZapLogRotation(t *testing.T) {
 		Compress:     true,
 	}
 
-	logger := zap.NewLog(config)
+	logger, err := zap.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -222,7 +243,10 @@ func TestZapBufferConfiguration(t *testing.T) {
 		MaxBackups:    1,
 	}
 
-	logger := zap.NewLog(config)
+	logger, err := zap.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -257,7 +281,10 @@ func TestZapLocalTime(t *testing.T) {
 				LocalTime:    tc.localTime,
 			}
 
-			logger := zap.NewLog(config)
+			logger, err := zap.NewLog(config)
+			if err != nil {
+				t.Errorf("expected logger to be created, but got error: %v", err)
+			}
 			if logger == nil {
 				t.Error("expected logger to be created")
 			}
@@ -278,7 +305,10 @@ func TestZapAllLogLevels(t *testing.T) {
 		LogInConsole: true,
 	}
 
-	logger := zap.NewLog(config)
+	logger, err := zap.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -302,7 +332,10 @@ func TestZapStructuredLogging(t *testing.T) {
 		LogInConsole: true,
 	}
 
-	logger := zap.NewLog(config)
+	logger, err := zap.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -341,7 +374,10 @@ func TestZapPerformance(t *testing.T) {
 		Compress:      true,
 	}
 
-	logger := zap.NewLog(config)
+	logger, err := zap.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}

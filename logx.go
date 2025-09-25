@@ -115,6 +115,10 @@ func Init(c *LoggerConfig) error {
 		c.Type = LoggerTypeZap
 	}
 
+	if c.Dir == "" {
+		c.Dir = "logs"
+	}
+
 	switch c.Type {
 	case LoggerTypeSlog:
 		return initSlogLogger(c)
@@ -149,7 +153,10 @@ func initSlogLogger(c *LoggerConfig) error {
 	}
 
 	// create the slog logger
-	logger := slog.NewLog(slogConfig)
+	logger, err := slog.NewLog(slogConfig)
+	if err != nil {
+		return err
+	}
 	globalLogger = logger
 	return nil
 }
@@ -174,7 +181,10 @@ func initZapLogger(c *LoggerConfig) error {
 	}
 
 	// create the zap logger
-	logger := zap.NewLog(zapConfig)
+	logger, err := zap.NewLog(zapConfig)
+	if err != nil {
+		return err
+	}
 	globalLogger = logger
 	return nil
 }

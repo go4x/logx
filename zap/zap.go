@@ -13,9 +13,6 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// Default is the default zap logger instance.
-var Default = NewLog(&ZapConfig{Director: "logs"})
-
 type loggerKey string
 
 // LoggerKey is the context key for storing the logger.
@@ -42,13 +39,18 @@ func pathExists(path string) (bool, error) {
 }
 
 // NewLog creates a new zap logger instance with the given configuration.
-func NewLog(c *ZapConfig) *Logger {
+func NewLog(c *ZapConfig) (*Logger, error) {
 	zapObj = zapDef{c: c}
 
 	// if the log directory does not exist, create it
 	if ok, _ := pathExists(c.Director); !ok {
-		fmt.Printf("create %v directory\n", c.Director)
-		_ = os.Mkdir(c.Director, os.ModePerm)
+		if err := os.MkdirAll(c.Director, os.ModePerm); err != nil {
+			return nil, err
+		}
+	}
+
+	if c.Director == "" {
+		return nil, fmt.Errorf("director is required")
 	}
 
 	cores := zapObj.GetZapCores()
@@ -57,7 +59,7 @@ func NewLog(c *ZapConfig) *Logger {
 	if c.ShowCaller {
 		logger = logger.WithOptions(zap.AddCaller())
 	}
-	return &Logger{SugaredLogger: logger.Sugar()}
+	return &Logger{SugaredLogger: logger.Sugar()}, nil
 }
 
 var zapObj zapDef
@@ -99,7 +101,8 @@ func (z *zapDef) GetEncoderConfig() zapcore.EncoderConfig {
 func (z *zapDef) GetEncoderCore(l zapcore.Level, level zap.LevelEnablerFunc) zapcore.Core {
 	writer, err := GetWriter(z.c, l.String()) // use file-rotatelogs to split logs
 	if err != nil {
-		fmt.Printf("Get Write Syncer Failed err:%v", err.Error())
+		// Use proper error handling instead of fmt.Printf
+		// Consider using a fallback writer or returning error
 		return nil
 	}
 	return zapcore.NewCore(z.GetEncoder(), writer, level)

@@ -6,7 +6,7 @@ import (
 
 // TestDefLogger is removed due to goroutine issues in testing
 
-func NewLog() *zap.Logger {
+func NewLog() (*zap.Logger, error) {
 	return zap.NewLog(&zap.ZapConfig{
 		Level:         "debug",
 		Prefix:        "",

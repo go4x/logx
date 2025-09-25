@@ -34,7 +34,7 @@ func TestSlogConfigValidation(t *testing.T) {
 		{
 			name:   "EmptyConfig",
 			config: &slog.SlogConfig{},
-			valid:  true, // Should work with defaults
+			valid:  false, // Should work with defaults
 		},
 		{
 			name: "MinimalConfig",
@@ -50,9 +50,15 @@ func TestSlogConfigValidation(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			defer os.RemoveAll("testlogs")
 
-			logger := slog.NewLog(tc.config)
-			if logger == nil {
-				t.Error("expected logger to be created")
+			logger, err := slog.NewLog(tc.config)
+			if !tc.valid {
+				if err == nil || logger != nil {
+					t.Errorf("expected logger not to be created and got error, but no error")
+				}
+			} else {
+				if logger == nil || err != nil {
+					t.Error("expected logger to be created")
+				}
 			}
 		})
 	}
@@ -73,7 +79,10 @@ func TestSlogFormats(t *testing.T) {
 				LogInConsole: true,
 			}
 
-			logger := slog.NewLog(config)
+			logger, err := slog.NewLog(config)
+			if err != nil {
+				t.Errorf("expected logger to be created, but got error: %v", err)
+			}
 			if logger == nil {
 				t.Error("expected logger to be created")
 			}
@@ -98,7 +107,10 @@ func TestSlogLogLevels(t *testing.T) {
 				LogInConsole: true,
 			}
 
-			logger := slog.NewLog(config)
+			logger, err := slog.NewLog(config)
+			if err != nil {
+				t.Errorf("expected logger to be created, but got error: %v", err)
+			}
 			if logger == nil {
 				t.Error("expected logger to be created")
 			}
@@ -125,7 +137,10 @@ func TestSlogConsoleAndFileOutput(t *testing.T) {
 		LogInFile:    true,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -156,7 +171,10 @@ func TestSlogFileOnlyOutput(t *testing.T) {
 		LogInConsole: false,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -177,13 +195,17 @@ func TestSlogFileOnlyOutput(t *testing.T) {
 // TestSlogConsoleOnlyOutput tests console-only output
 func TestSlogConsoleOnlyOutput(t *testing.T) {
 	config := &slog.SlogConfig{
+		Dir:          "testlogs",
 		Level:        "info",
 		Format:       "text",
 		LogInConsole: true,
 		LogInFile:    false,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -207,7 +229,10 @@ func TestSlogLogRotation(t *testing.T) {
 		Compress:   true,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -246,7 +271,10 @@ func TestSlogBufferConfiguration(t *testing.T) {
 		MaxBackups:    1,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -281,7 +309,10 @@ func TestSlogLocalTime(t *testing.T) {
 				LocalTime:    tc.localTime,
 			}
 
-			logger := slog.NewLog(config)
+			logger, err := slog.NewLog(config)
+			if err != nil {
+				t.Errorf("expected logger to be created, but got error: %v", err)
+			}
 			if logger == nil {
 				t.Error("expected logger to be created")
 			}
@@ -302,7 +333,10 @@ func TestSlogStructuredLogging(t *testing.T) {
 		LogInConsole: true,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -341,7 +375,10 @@ func TestSlogPerformance(t *testing.T) {
 		Compress:      true,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
@@ -370,7 +407,10 @@ func TestSlogEdgeCases(t *testing.T) {
 		LogInConsole: true,
 	}
 
-	logger := slog.NewLog(config)
+	logger, err := slog.NewLog(config)
+	if err != nil {
+		t.Errorf("expected logger to be created, but got error: %v", err)
+	}
 	if logger == nil {
 		t.Error("expected logger to be created")
 	}
