@@ -67,6 +67,7 @@ func ExampleBasicUsage() {
 		Level:        "warn",
 		LogInConsole: true,
 		Format:       "text",
+		Dir:          "logs",
 	}
 
 	err = logx.Init(defaultConfig)
@@ -90,8 +91,8 @@ func ExampleGlobalLogger() {
 	config := &logx.LoggerConfig{
 		Type:         logx.LoggerTypeZap,
 		Level:        "info",
-		LogInConsole: true,
 		Dir:          "logs",
+		LogInConsole: true,
 		Format:       string(logx.FormatText),
 		MaxAge:       7,
 		MaxSize:      100,
