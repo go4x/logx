@@ -294,3 +294,52 @@ func TestConcurrentLogging(t *testing.T) {
 		t.Errorf("no log files found in directory: %s", logDir)
 	}
 }
+
+// TestFormatting tests the formatted logging methods.
+func TestFormatting(t *testing.T) {
+	logDir := "testlogs_fmt"
+	defer os.RemoveAll(logDir)
+
+	cfg := &logx.LoggerConfig{
+		Type:         logx.LoggerTypeZap,
+		Level:        "debug",
+		LogInConsole: false,
+		Dir:          logDir,
+		Format:       "text",
+		MaxAge:       1,
+		MaxSize:      1,
+		MaxBackups:   1,
+	}
+
+	err := logx.Init(cfg)
+	if err != nil {
+		t.Fatalf("failed to initialize logger: %v", err)
+	}
+
+	logx.Debugf("debug %s", "fmt")
+	logx.Infof("info %d", 123)
+	logx.Warnf("warn %v", true)
+	logx.Errorf("error %s", "msg")
+
+	// Wait for buffer flush
+	time.Sleep(100 * time.Millisecond)
+
+	// Test with slog
+	cfg.Type = logx.LoggerTypeSlog
+	logDirSlog := "testlogs_fmt_slog"
+	defer os.RemoveAll(logDirSlog)
+	cfg.Dir = logDirSlog
+
+	err = logx.Init(cfg)
+	if err != nil {
+		t.Fatalf("failed to initialize slog logger: %v", err)
+	}
+
+	logx.Debugf("debug %s", "slog fmt")
+	logx.Infof("info %d", 456)
+	logx.Warnf("warn %v", false)
+	logx.Errorf("error %s", "slog msg")
+
+	// Wait for buffer flush
+	time.Sleep(100 * time.Millisecond)
+}

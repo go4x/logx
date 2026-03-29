@@ -77,12 +77,24 @@ func (l *Logger) Debug(args ...any) {
 	l.Logger.Debug(msg)
 }
 
+// Debugf implements the Debugf method of the Logger interface
+func (l *Logger) Debugf(template string, args ...any) {
+	msg := fmt.Sprintf(template, args...)
+	l.Logger.Debug(msg)
+}
+
 // Info implements the Info method of the Logger interface
 func (l *Logger) Info(args ...any) {
 	if len(args) == 0 {
 		return
 	}
 	msg := fmt.Sprint(args...)
+	l.Logger.Info(msg)
+}
+
+// Infof implements the Infof method of the Logger interface
+func (l *Logger) Infof(template string, args ...any) {
+	msg := fmt.Sprintf(template, args...)
 	l.Logger.Info(msg)
 }
 
@@ -95,12 +107,24 @@ func (l *Logger) Warn(args ...any) {
 	l.Logger.Warn(msg)
 }
 
+// Warnf implements the Warnf method of the Logger interface
+func (l *Logger) Warnf(template string, args ...any) {
+	msg := fmt.Sprintf(template, args...)
+	l.Logger.Warn(msg)
+}
+
 // Error implements the Error method of the Logger interface
 func (l *Logger) Error(args ...any) {
 	if len(args) == 0 {
 		return
 	}
 	msg := fmt.Sprint(args...)
+	l.Logger.Error(msg)
+}
+
+// Errorf implements the Errorf method of the Logger interface
+func (l *Logger) Errorf(template string, args ...any) {
+	msg := fmt.Sprintf(template, args...)
 	l.Logger.Error(msg)
 }
 
@@ -114,6 +138,13 @@ func (l *Logger) Fatal(args ...any) {
 		return
 	}
 	msg := fmt.Sprint(args...)
+	l.Logger.Error(msg)
+	os.Exit(1)
+}
+
+// Fatalf implements the Fatalf method of the Logger interface
+func (l *Logger) Fatalf(template string, args ...any) {
+	msg := fmt.Sprintf(template, args...)
 	l.Logger.Error(msg)
 	os.Exit(1)
 }

@@ -51,14 +51,24 @@ const (
 type Logger interface {
 	// Debug logs a debug message.
 	Debug(args ...any)
+	// Debugf logs a formatted debug message.
+	Debugf(template string, args ...any)
 	// Info logs an informational message.
 	Info(args ...any)
+	// Infof logs a formatted informational message.
+	Infof(template string, args ...any)
 	// Warn logs a warning message.
 	Warn(args ...any)
+	// Warnf logs a formatted warning message.
+	Warnf(template string, args ...any)
 	// Error logs an error message.
 	Error(args ...any)
+	// Errorf logs a formatted error message.
+	Errorf(template string, args ...any)
 	// Fatal logs a fatal message and exits the program.
 	Fatal(args ...any)
+	// Fatalf logs a formatted fatal message and exits the program.
+	Fatalf(template string, args ...any)
 }
 
 // LoggerConfig holds the configuration for the logger.
@@ -197,11 +207,25 @@ func Debug(args ...any) {
 	}
 }
 
+// Debugf logs a formatted debug message using the global logger.
+func Debugf(template string, args ...any) {
+	if globalLogger != nil {
+		globalLogger.Debugf(template, args...)
+	}
+}
+
 // Info logs an informational message using the global logger.
 // If the global logger is not initialized, this function does nothing.
 func Info(args ...any) {
 	if globalLogger != nil {
 		globalLogger.Info(args...)
+	}
+}
+
+// Infof logs a formatted informational message using the global logger.
+func Infof(template string, args ...any) {
+	if globalLogger != nil {
+		globalLogger.Infof(template, args...)
 	}
 }
 
@@ -213,6 +237,13 @@ func Warn(args ...any) {
 	}
 }
 
+// Warnf logs a formatted warning message using the global logger.
+func Warnf(template string, args ...any) {
+	if globalLogger != nil {
+		globalLogger.Warnf(template, args...)
+	}
+}
+
 // Error logs an error message using the global logger.
 // If the global logger is not initialized, this function does nothing.
 func Error(args ...any) {
@@ -221,10 +252,24 @@ func Error(args ...any) {
 	}
 }
 
+// Errorf logs a formatted error message using the global logger.
+func Errorf(template string, args ...any) {
+	if globalLogger != nil {
+		globalLogger.Errorf(template, args...)
+	}
+}
+
 // Fatal logs a fatal message using the global logger and exits the program.
 // If the global logger is not initialized, this function does nothing.
 func Fatal(args ...any) {
 	if globalLogger != nil {
 		globalLogger.Fatal(args...)
+	}
+}
+
+// Fatalf logs a formatted fatal message using the global logger and exits the program.
+func Fatalf(template string, args ...any) {
+	if globalLogger != nil {
+		globalLogger.Fatalf(template, args...)
 	}
 }
